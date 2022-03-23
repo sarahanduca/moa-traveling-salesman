@@ -77,9 +77,35 @@ def nearestNeighbor(graph):
     print(sum(betterWeight))
 
 
+def farestNeighbor(graph):
+    randomVertex = random.randint(0, graph.n)
+
+    listVisit = []
+    listVisit.append(randomVertex)
+    edges = []
+
+    while len(listVisit) < graph.n:
+        max = 0
+        for j in range(graph.n):
+            if j not in listVisit:
+                if graph.getElement(randomVertex, j) > max:
+                    max = graph.getElement(randomVertex, j)
+                    i = j
+        listVisit.append(i)
+        edges.append([(randomVertex, i), max])
+        randomVertex = i
+
+    for element in edges:
+        print(element)
+
+    betterWeight = [item[1] for item in edges]
+
+    print(sum(betterWeight))
+
+
 def main():
     graph = makeMatrix()
-    nearestNeighbor(graph)
+    farestNeighbor(graph)
 
 
 if __name__ == '__main__':
