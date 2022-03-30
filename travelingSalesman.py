@@ -3,24 +3,13 @@ import random
 import copy
 
 
-class Matrix:
-    def __init__(self, n, m):
-        self.matrix = self.getMatrix(n, m)
+class Graph:
+    def __init__(self, n):
         self.n = n
+        self.vertex = []
 
-    def getMatrix(self, n, m):
-        num = math.inf
-        matrix = [[None for j in range(m)] for i in range(n)]
-        for i in range(len(matrix)):
-            for j in range(len(matrix[i])):
-                matrix[i][j] = num
-        return matrix
-
-    def getElement(self, i, j):
-        return self.matrix[i-1][j-1]
-
-    def setElement(self, i, j, element):
-        self.matrix[i-1][j-1] = element
+    def setVertex(self, n, x, y):
+        self.vertex.append([n, x, y])
 
 
 class Edges:
@@ -46,28 +35,35 @@ class Vertex:
 
 
 def weightEdge(v1, v2):
-    return math.sqrt(((v1.x-v2.x)**2) + ((v1.y-v2.y)**2))
+    return math.sqrt(((v1[1]-v2[1])**2) + ((v1[2]-v2[2])**2))
 
 
 def readInput():
     description = []
-    listVertex = []
     userInput = ''
     contLines = 0
     while userInput != 'EOF':
         userInput = input().strip()
         description.append(userInput)
-    i = description.index('NODE_COORD_SECTION')
+    i = description.index('a')
     constructor = description[i + 1: len(description) - 1]
+    graph = Graph(len(constructor))
     for line in constructor:
-        listVertex.append(
-            Vertex(contLines + 1, line.split()[1], line.split()[-1]))
+        graph.setVertex(contLines + 1, float(line.split()
+                                             [1]), float(line.split()[-1]))
         contLines += 1
-    graph = Matrix(contLines, contLines)
-    for i in range(len(listVertex)):
-        for j in range(len(listVertex)):
-            graph.setElement(i, j, weightEdge(listVertex[i], listVertex[j]))
 
+    return graph
+
+
+def makeMatrix():
+    contLines = 0
+    file = open('pontos.txt', 'r')
+    graph = Graph(33810)
+    for line in file:
+        graph.setVertex(contLines + 1, float(line.split()
+                                             [1]), float(line.split()[-1]))
+        contLines += 1
     return graph
 
 
@@ -81,14 +77,17 @@ def nearestNeighbor(graph):
         min = math.inf
         for j in range(graph.n):
             if j not in listVisit:
-                if graph.getElement(randomVertex, j) < min:
-                    min = graph.getElement(randomVertex, j)
+                # print(graph.vertex[100], graph.vertex[2])
+                if weightEdge(graph.vertex[randomVertex], graph.vertex[j]) < min:
+                    min = weightEdge(
+                        graph.vertex[randomVertex], graph.vertex[j])
                     i = j
         listVisit.append(i)
         edges.append(Edges(randomVertex, i, min))
         randomVertex = i
 
-    edges.append(Edges(i, firstVertex, graph.getElement(i, firstVertex)))
+    edges.append(Edges(i, firstVertex, weightEdge(
+        graph.vertex[i], graph.vertex[firstVertex])))
     sumWeight = 0
     for edge in edges:
         sumWeight += edge.weight
@@ -106,8 +105,8 @@ def farestNeighbor(graph):
         max = 0
         for j in range(graph.n):
             if j not in listVisit:
-                if graph.getElement(randomVertex, j) > max:
-                    max = graph.getElement(randomVertex, j)
+                if weightEdge(randomVertex, j) > max:
+                    max = weightEdge(randomVertex, j)
                     i = j
         listVisit.append(i)
         edges.append([(randomVertex, i), max])
@@ -120,6 +119,13 @@ def isAdjacent(currEdge, randomEdge):
     return currEdge.x == randomEdge.x or currEdge.y == randomEdge.x or randomEdge.y == currEdge.x or currEdge.y == randomEdge.y
 
 
+def compareWeight(graph, edge, randomEdge):
+    newEdge1 = weightEdge(graph.vertex[edge.x], graph.vertex[randomEdge.x])
+    newEdge2 = weightEdge(graph.vertex[edge.y], graph.vertex[randomEdge.y])
+    if (newEdge1 + newEdge2) < (edge.weight + randomEdge.weight):
+        swap(edge, randomEdge, graph)
+
+
 def twoOpt(edges, graph):
     for index, edge in enumerate(edges):
         randomList = random.sample(range(0, graph.n), graph.n)
@@ -127,10 +133,7 @@ def twoOpt(edges, graph):
             randomIndex = randomList.pop()
             randomEdge = edges[randomIndex]
             if not isAdjacent(edge, randomEdge):
-                newEdge1 = graph.getElement(edge.x, randomEdge.x)
-                newEdge2 = graph.getElement(edge.y, randomEdge.y)
-                if (newEdge1 + newEdge2) < (edge.weight + randomEdge.weight):
-                    swap(edge, randomEdge, graph)
+                compareWeight(graph, edge, randomEdge)
 
     sumWeight = 0
     for edge in edges:
@@ -141,13 +144,31 @@ def twoOpt(edges, graph):
 
 def swap(edge1, edge2, graph):
     y = edge1.y
-    edge1.setEdge(edge1.x, edge2.x, graph.getElement(edge1.x, edge2.x))
-    edge2.setEdge(y, edge2.y, graph.getElement(y, edge2.y))
+    edge1.setEdge(edge1.x, edge2.x, weightEdge(
+        graph.vertex[edge1.x], graph.vertex[edge2.x]))
+    edge2.setEdge(y, edge2.y, weightEdge(
+        graph.vertex[y], graph.vertex[edge2.y]))
+
+
+def threeOpt(edges, graph):
+    for index, edge in enumerate(edges):
+        randomList1 = random.sample(range(0, graph.n), graph.n)
+        while len(randomList1) > 0:
+            randomIndex1 = randomList1.pop()
+            randomEdge1 = edges[randomIndex1]
+            randomList2 = random.sample(range(0, graph.n), graph.n)
+            if not isAdjacent(edge, randomEdge1):
+                while len(randomList2) > 0:
+                    randomIndex2 = randomList2.pop()
+                    randomEdge2 = edges[randomIndex2]
+                    if not isAdjacent(edge, randomEdge2) and not isAdjacent(randomEdge1, randomEdge2):
+                        a = 2
 
 
 if __name__ == '__main__':
-    graph = readInput()
+    graph = makeMatrix()
     result, edges = nearestNeighbor(graph)
+    # threeOpt(edges, graph)
     result2 = twoOpt(edges, graph)
 
     print(result2)
