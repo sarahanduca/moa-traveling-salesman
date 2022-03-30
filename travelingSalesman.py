@@ -59,7 +59,7 @@ def readInput():
 def makeMatrix():
     contLines = 0
     file = open('pontos.txt', 'r')
-    graph = Graph(33810)
+    graph = Graph(48)
     for line in file:
         graph.setVertex(contLines + 1, float(line.split()
                                              [1]), float(line.split()[-1]))
@@ -123,7 +123,26 @@ def compareWeight(graph, edge, randomEdge):
     newEdge1 = weightEdge(graph.vertex[edge.x], graph.vertex[randomEdge.x])
     newEdge2 = weightEdge(graph.vertex[edge.y], graph.vertex[randomEdge.y])
     if (newEdge1 + newEdge2) < (edge.weight + randomEdge.weight):
-        swap(edge, randomEdge, graph)
+        return True
+    return False
+
+
+def compareWeight3(graph, edge, randomEdge1, randomEdge2):
+    newEdge1 = weightEdge(graph.vertex[edge.x], graph.vertex[randomEdge1.x])
+    newEdge2 = weightEdge(graph.vertex[edge.y], graph.vertex[randomEdge2.x])
+    newEdge3 = weightEdge(
+        graph.vertex[randomEdge1.y], graph.vertex[randomEdge2.y])
+    if (newEdge1 + newEdge2 + newEdge3) < (edge.weight + randomEdge1.weight + randomEdge2.weight):
+        return True
+    return False
+
+
+def compareWeight3Value(graph, edge, randomEdge1, randomEdge2):
+    newEdge1 = weightEdge(graph.vertex[edge.x], graph.vertex[randomEdge1.x])
+    newEdge2 = weightEdge(graph.vertex[edge.y], graph.vertex[randomEdge2.x])
+    newEdge3 = weightEdge(
+        graph.vertex[randomEdge1.y], graph.vertex[randomEdge2.y])
+    return newEdge1 + newEdge2 + newEdge3
 
 
 def twoOpt(edges, graph):
@@ -133,7 +152,8 @@ def twoOpt(edges, graph):
             randomIndex = randomList.pop()
             randomEdge = edges[randomIndex]
             if not isAdjacent(edge, randomEdge):
-                compareWeight(graph, edge, randomEdge)
+                if(compareWeight(graph, edge, randomEdge)):
+                    swap(edge, randomEdge, graph)
 
     sumWeight = 0
     for edge in edges:
@@ -151,24 +171,54 @@ def swap(edge1, edge2, graph):
 
 
 def threeOpt(edges, graph):
+
     for index, edge in enumerate(edges):
-        randomList1 = random.sample(range(0, graph.n), graph.n)
-        while len(randomList1) > 0:
-            randomIndex1 = randomList1.pop()
+        randomList = random.sample(range(0, graph.n), graph.n)
+        while len(randomList) > 1:
+            optResults = [math.inf]*7
+            randomIndex1 = randomList.pop()
+            randomIndex2 = randomList.pop()
             randomEdge1 = edges[randomIndex1]
-            randomList2 = random.sample(range(0, graph.n), graph.n)
-            if not isAdjacent(edge, randomEdge1):
-                while len(randomList2) > 0:
-                    randomIndex2 = randomList2.pop()
-                    randomEdge2 = edges[randomIndex2]
-                    if not isAdjacent(edge, randomEdge2) and not isAdjacent(randomEdge1, randomEdge2):
-                        a = 2
+            randomEdge2 = edges[randomIndex2]
+            if not isAdjacent(edge, randomEdge1) and not isAdjacent(edge, randomEdge2) and not isAdjacent(randomEdge1, randomEdge2):
+                if compareWeight(graph, edge, randomEdge2):
+                    optResults[0] = weightEdge(graph.vertex[edge.x], graph.vertex[randomEdge2.x]) + weightEdge(
+                        graph.vertex[edge.y], graph.vertex[randomEdge2.y])
+                elif compareWeight(graph, randomEdge1, randomEdge2):
+                    optResults[1] = weightEdge(graph.vertex[randomEdge1.x], graph.vertex[randomEdge2.x]) + weightEdge(
+                        graph.vertex[randomEdge1.y], graph.vertex[randomEdge2.y])
+                elif compareWeight(graph, edge, randomEdge1):
+                    optResults[2] = weightEdge(graph.vertex[edge.x], graph.vertex[randomEdge1.x]) + weightEdge(
+                        graph.vertex[edge.y], graph.vertex[randomEdge1.y])
+                elif compareWeight3(graph, edge, randomEdge1, randomEdge2):
+                    optResults[3] = compareWeight3Value(
+                        graph, edge, randomEdge1, randomEdge2)
+                elif compareWeight3(graph, randomEdge1, randomEdge2, edge):
+                    optResults[5] = compareWeight3Value(
+                        graph, randomEdge1, randomEdge2, edge)
+
+                minList = min(optResults)
+                minListIndex = optResults.index(minList)
+                if minListIndex == 0:
+                    swap(edge, randomEdge2, graph)
+                elif minListIndex == 1:
+                    swap(randomEdge1, randomEdge2, graph)
+                elif minListIndex == 2:
+                    swap(edge, randomEdge1, graph)
+
+            randomList.append(randomIndex2)
+
+    sumWeight = 0
+    for edge in edges:
+        sumWeight += edge.weight
+
+    return sumWeight
 
 
 if __name__ == '__main__':
     graph = makeMatrix()
     result, edges = nearestNeighbor(graph)
-    # threeOpt(edges, graph)
-    result2 = twoOpt(edges, graph)
+    # result2 = twoOpt(edges, graph)
+    result3 = threeOpt(edges, graph)
 
-    print(result2)
+    print(result, result3)
