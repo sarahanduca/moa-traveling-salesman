@@ -21,47 +21,34 @@ class Matrix:
     def setElement(self, i, j, element):
         self.matrix[i-1][j-1] = element
 
-
 class Vertex:
     def __init__(self, id, x, y):
         self.id = int(id)
         self.x = float(x)
         self.y = float(y)
 
-class Edges:
-    def __init__(self, vertex1, vertex2, edge):
-        self.vertex1 = vertex1
-        self.vertex2 = vertex2
-        self.edge = edge
+# class Edges:
+#     def __init__(self, vertex1, vertex2, edge):
+#         self.vertex1 = vertex1
+#         self.vertex2 = vertex2
+#         self.edge = edge
+    
+#     def setVertex(self, vertex1, vertex2):
+#         self.vertex1 = vertex1
+#         self.vertex2 = vertex2
+
+#     def setEdge(self, edge):
+#         self.edge = edge
+        
 
 def weightEdge(v1, v2):
     return math.sqrt(((v1.x-v2.x)**2) + ((v1.y-v2.y)**2))
-
-
-# def makeMatrix():
-#     listVertex = []
-#     contLines = 0
-#     file = open('pontos.txt', 'r')
-#     for line in file:
-#         listVertex.append(
-#             Vertex(contLines + 1, line.split()[1], line.split()[-1]))
-#         contLines += 1
-
-#     graph = Matrix(contLines, contLines)
-
-#     for i in range(len(listVertex)):
-#         for j in range(len(listVertex)):
-#             graph.setElement(i, j, weightEdge(listVertex[i], listVertex[j]))
-
-#     return graph
-
 
 def readInput():
     description = []
     listVertex = []
     userInput = ''
-    contLines = 0
-    
+    contLines = 0    
     while userInput != 'EOF':
         userInput = input().strip()
         description.append(userInput)
@@ -71,9 +58,7 @@ def readInput():
         listVertex.append(
             Vertex(contLines + 1, line.split()[1], line.split()[-1]))
         contLines += 1
-
     graph = Matrix(contLines, contLines)
-
     for i in range(len(listVertex)):
         for j in range(len(listVertex)):
             graph.setElement(i, j, weightEdge(listVertex[i], listVertex[j]))
@@ -83,11 +68,9 @@ def readInput():
 def nearestNeighbor(graph):
     randomVertex = random.randint(0, graph.n)
     firstVertex = randomVertex
-
     listVisit = []
     listVisit.append(randomVertex)
     edges = []
-
     while len(listVisit) < graph.n:
         min = math.inf
         for j in range(graph.n):
@@ -95,25 +78,20 @@ def nearestNeighbor(graph):
                 if graph.getElement(randomVertex, j) < min:
                     min = graph.getElement(randomVertex, j)
                     i = j
-
         listVisit.append(i)
         edges.append([[randomVertex, i], min])
         randomVertex = i
     edges.append([[i, firstVertex], graph.getElement(i, firstVertex)])
     # for element in edges:
     #     print(element)
-
     betterWeight = [item[1] for item in edges]
     return sum(betterWeight), edges
 
-
 def farestNeighbor(graph):
     randomVertex = random.randint(0, graph.n)
-
     listVisit = []
     listVisit.append(randomVertex)
     edges = []
-
     while len(listVisit) < graph.n:
         max = 0
         for j in range(graph.n):
@@ -124,30 +102,25 @@ def farestNeighbor(graph):
         listVisit.append(i)
         edges.append([(randomVertex, i), max])
         randomVertex = i
-
-    for element in edges:
-        print(element)
-
     betterWeight = [item[1] for item in edges]
-
     return sum(betterWeight)
 
 def isAdjacent(currEdge, randomEdge, beforeCurr):
     return currEdge[0][0] == randomEdge or currEdge[0][1] == randomEdge or beforeCurr[0][0] == randomEdge
 
 def twoOpt(edges, graph):
-    result = copy.deepcopy(edges)
+    result = copy.copy(edges)
     for index, edge in enumerate(edges):
         randomList = random.sample(range(0, graph.n), graph.n)
-        while len(randomList) != 0:
+        while len(randomList) > 0:
             randomIndex = randomList.pop()
             randomEdge = edges[randomIndex]
             if not isAdjacent(edge, randomEdge[0][0], edges[index - 1]):
                 newEdge1 = graph.getElement(edge[0][0], randomEdge[0][0])
                 newEdge2 = graph.getElement(edge[0][1], randomEdge[0][1])
-                if newEdge1 + newEdge2 < edge[1] + randomEdge[1]:
-                    result = swap(edge[0][0], randomIndex, result)
-
+                if (newEdge1 + newEdge2) < (edge[1] + randomEdge[1]):
+                    result = swap(edge[0][0], randomIndex, edges)
+                    
     return sum([item[1] for item in result])
 
 def swap(vertex1, vertex2, edges):
