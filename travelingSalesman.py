@@ -2,6 +2,7 @@ import math
 import random
 import copy
 
+
 class Matrix:
     def __init__(self, n, m):
         self.matrix = self.getMatrix(n, m)
@@ -21,6 +22,22 @@ class Matrix:
     def setElement(self, i, j, element):
         self.matrix[i-1][j-1] = element
 
+
+class Edges:
+    def __init__(self, x, y, weight):
+        self.x = x
+        self.y = y
+        self.weight = weight
+
+    def setEdge(self, x, y, weight):
+        self.x = x
+        self.y = y
+        self.weight = weight
+
+    def getEdge(self):
+        return self.x, self.y, self.weight
+
+
 class Vertex:
     def __init__(self, id, x, y):
         self.id = int(id)
@@ -32,27 +49,28 @@ class Vertex:
 #         self.vertex1 = vertex1
 #         self.vertex2 = vertex2
 #         self.edge = edge
-    
+
 #     def setVertex(self, vertex1, vertex2):
 #         self.vertex1 = vertex1
 #         self.vertex2 = vertex2
 
 #     def setEdge(self, edge):
 #         self.edge = edge
-        
+
 
 def weightEdge(v1, v2):
     return math.sqrt(((v1.x-v2.x)**2) + ((v1.y-v2.y)**2))
+
 
 def readInput():
     description = []
     listVertex = []
     userInput = ''
-    contLines = 0    
+    contLines = 0
     while userInput != 'EOF':
         userInput = input().strip()
         description.append(userInput)
-    i = description.index('a')
+    i = description.index('NODE_COORD_SECTION')
     constructor = description[i + 1: len(description) - 1]
     for line in constructor:
         listVertex.append(
@@ -64,6 +82,7 @@ def readInput():
             graph.setElement(i, j, weightEdge(listVertex[i], listVertex[j]))
 
     return graph
+
 
 def nearestNeighbor(graph):
     randomVertex = random.randint(0, graph.n)
@@ -79,13 +98,17 @@ def nearestNeighbor(graph):
                     min = graph.getElement(randomVertex, j)
                     i = j
         listVisit.append(i)
-        edges.append([[randomVertex, i], min])
+        edges.append(Edges(randomVertex, i, min))
         randomVertex = i
-    edges.append([[i, firstVertex], graph.getElement(i, firstVertex)])
-    # for element in edges:
-    #     print(element)
-    betterWeight = [item[1] for item in edges]
-    return sum(betterWeight), edges
+
+    edges.append(Edges(i, firstVertex, graph.getElement(i, firstVertex)))
+    sumWeight = 0
+    for edge in edges:
+        sumWeight += edge.weight
+
+    # betterWeight = [item[1] for item in edges]
+    return sumWeight, edges
+
 
 def farestNeighbor(graph):
     randomVertex = random.randint(0, graph.n)
@@ -105,42 +128,39 @@ def farestNeighbor(graph):
     betterWeight = [item[1] for item in edges]
     return sum(betterWeight)
 
-def isAdjacent(currEdge, randomEdge, beforeCurr):
-    return currEdge[0][0] == randomEdge or currEdge[0][1] == randomEdge or beforeCurr[0][0] == randomEdge
+
+def isAdjacent(currEdge, randomEdge):
+    return currEdge.x == randomEdge.x or currEdge.y == randomEdge.x or randomEdge.y == currEdge.x or currEdge.y == randomEdge.y
+
 
 def twoOpt(edges, graph):
-    result = copy.copy(edges)
     for index, edge in enumerate(edges):
         randomList = random.sample(range(0, graph.n), graph.n)
         while len(randomList) > 0:
             randomIndex = randomList.pop()
             randomEdge = edges[randomIndex]
-            if not isAdjacent(edge, randomEdge[0][0], edges[index - 1]):
-                newEdge1 = graph.getElement(edge[0][0], randomEdge[0][0])
-                newEdge2 = graph.getElement(edge[0][1], randomEdge[0][1])
-                if (newEdge1 + newEdge2) < (edge[1] + randomEdge[1]):
-                    result = swap(edge[0][0], randomIndex, edges)
-                    
-    return sum([item[1] for item in result])
+            if not isAdjacent(edge, randomEdge):
+                newEdge1 = graph.getElement(edge.x, randomEdge.x)
+                newEdge2 = graph.getElement(edge.y, randomEdge.y)
+                if (newEdge1 + newEdge2) < (edge.weight + randomEdge.weight):
+                    swap(edge, randomEdge, graph)
 
-def swap(vertex1, vertex2, edges):
-    listEdges = copy.deepcopy(edges)
-    index1 = getIndexOfFirstVertex(vertex1, listEdges)
-    index2 = getIndexOfFirstVertex(vertex2, listEdges)
-    listEdges[index2][0][0] = edges[index1][0][1]
-    listEdges[index1][0][1] = edges[index2][0][0]
-    return listEdges
-
-def getIndexOfFirstVertex(vertex, edges):
-    cont = 0
+    sumWeight = 0
     for edge in edges:
-        if edge[0][0] == vertex:
-            return cont
-        cont += 1
+        sumWeight += edge.weight
+
+    return sumWeight
+
+
+def swap(edge1, edge2, graph):
+    y = edge1.y
+    edge1.setEdge(edge1.x, edge2.x, graph.getElement(edge1.x, edge2.x))
+    edge2.setEdge(y, edge2.y, graph.getElement(y, edge2.y))
+
 
 if __name__ == '__main__':
     graph = readInput()
     result, edges = nearestNeighbor(graph)
     result2 = twoOpt(edges, graph)
 
-    print(result, result2)
+    print(result2)
