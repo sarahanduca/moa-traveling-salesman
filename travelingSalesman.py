@@ -1,6 +1,6 @@
 import math
 import random
-import re
+import copy
 
 class Matrix:
     def __init__(self, n, m):
@@ -27,6 +27,12 @@ class Vertex:
         self.id = int(id)
         self.x = float(x)
         self.y = float(y)
+
+class Edges:
+    def __init__(self, vertex1, vertex2, edge):
+        self.vertex1 = vertex1
+        self.vertex2 = vertex2
+        self.edge = edge
 
 def weightEdge(v1, v2):
     return math.sqrt(((v1.x-v2.x)**2) + ((v1.y-v2.y)**2))
@@ -130,6 +136,7 @@ def isAdjacent(currEdge, randomEdge, beforeCurr):
     return currEdge[0][0] == randomEdge or currEdge[0][1] == randomEdge or beforeCurr[0][0] == randomEdge
 
 def twoOpt(edges, graph):
+    result = copy.deepcopy(edges)
     for index, edge in enumerate(edges):
         randomList = random.sample(range(0, graph.n), graph.n)
         while len(randomList) != 0:
@@ -139,23 +146,19 @@ def twoOpt(edges, graph):
                 newEdge1 = graph.getElement(edge[0][0], randomEdge[0][0])
                 newEdge2 = graph.getElement(edge[0][1], randomEdge[0][1])
                 if newEdge1 + newEdge2 < edge[1] + randomEdge[1]:
-                    swap(edge[0][0], randomIndex, edges)
+                    result = swap(edge[0][0], randomIndex, result)
 
-    return sum([item[1] for item in edges])
+    return sum([item[1] for item in result])
 
 def swap(vertex1, vertex2, edges):
-    print(edges)
-    listEdges = list(edges)
-    i1 = getIndex(vertex1, listEdges)
-    i2 = getIndex(vertex2, listEdges)
-    print(edges[i1][0][1])
-    print(listEdges[i2][0][0])
-    listEdges[i2][0][0] = edges[i1][0][1]
-    listEdges[i1][0][1] = edges[i2][0][0]
+    listEdges = copy.deepcopy(edges)
+    index1 = getIndexOfFirstVertex(vertex1, listEdges)
+    index2 = getIndexOfFirstVertex(vertex2, listEdges)
+    listEdges[index2][0][0] = edges[index1][0][1]
+    listEdges[index1][0][1] = edges[index2][0][0]
+    return listEdges
 
-    
-
-def getIndex(vertex, edges):
+def getIndexOfFirstVertex(vertex, edges):
     cont = 0
     for edge in edges:
         if edge[0][0] == vertex:
