@@ -44,19 +44,6 @@ class Vertex:
         self.x = float(x)
         self.y = float(y)
 
-# class Edges:
-#     def __init__(self, vertex1, vertex2, edge):
-#         self.vertex1 = vertex1
-#         self.vertex2 = vertex2
-#         self.edge = edge
-
-#     def setVertex(self, vertex1, vertex2):
-#         self.vertex1 = vertex1
-#         self.vertex2 = vertex2
-
-#     def setEdge(self, edge):
-#         self.edge = edge
-
 
 def weightEdge(v1, v2):
     return math.sqrt(((v1.x-v2.x)**2) + ((v1.y-v2.y)**2))
