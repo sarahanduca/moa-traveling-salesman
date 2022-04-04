@@ -4,12 +4,12 @@ import copy
 
 
 class Graph:
-    def __init__(self, n):
-        self.n = n
+    def __init__(self, size):
+        self.size = size
         self.vertex = []
 
-    def setVertex(self, n, x, y):
-        self.vertex.append([n, x, y])
+    def setVertex(self, id, x, y):
+        self.vertex.append([id, x, y])
 
 
 class Edges:
