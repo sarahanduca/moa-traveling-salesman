@@ -26,14 +26,6 @@ class Edges:
     def getEdge(self):
         return self.x, self.y, self.weight
 
-
-class Vertex:
-    def __init__(self, id, x, y):
-        self.id = int(id)
-        self.x = float(x)
-        self.y = float(y)
-
-
 def weightEdge(v1, v2):
     return math.sqrt(((v1[1]-v2[1])**2) + ((v1[2]-v2[2])**2))
 
