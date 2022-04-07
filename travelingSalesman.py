@@ -10,12 +10,7 @@ class Graph:
 
     def setVertex(self, id, x, y):
         self.vertex.append([id, x, y, False])
-    
-    def setVisit(self, index):
-        self.vertex[index][3] = True
-    
-    def isVisit(self, index):
-        return self.vertex[index][3]
+   
 
 
 class Edges:
@@ -64,7 +59,7 @@ def readInput():
 def makeMatrix():
     contLines = 0
     file = open('D:\Sarah\Code\MOA-Trabalho1\pontos.txt', 'r')
-    graph = Graph(15)
+    graph = Graph(48)
     for line in file:
         graph.setVertex(contLines + 1, float(line.split()
                                              [1]), float(line.split()[-1]))
@@ -75,23 +70,25 @@ def makeMatrix():
 def nearestNeighbor(graph):
     randomVertex = random.randint(0, graph.size - 1)
     firstVertex = randomVertex
-    listVisit = []
-    listVisit.append(randomVertex)
+    listVisit = [False] * graph.size
+    listVisit[randomVertex] = True
     edges = []
-    while len(listVisit) < graph.size:
+    cont = 0
+    while cont < graph.size - 1:
         min = math.inf
         for j in range(graph.size):
-            if j not in listVisit:
+            if not listVisit[j]:
                 if weightEdge(graph.vertex[randomVertex], graph.vertex[j]) < min:
                     min = weightEdge(
                         graph.vertex[randomVertex], graph.vertex[j])
-                    i = j
-        listVisit.append(i)
-        edges.append(Edges(randomVertex, i, min))
-        randomVertex = i
+                    lastVertex = j
+        listVisit[lastVertex] = True
+        edges.append(Edges(randomVertex, lastVertex , min))
+        randomVertex = lastVertex 
+        cont+=1
 
-    edges.append(Edges(i, firstVertex, weightEdge(
-        graph.vertex[i], graph.vertex[firstVertex])))
+    edges.append(Edges(lastVertex , firstVertex, weightEdge(
+        graph.vertex[lastVertex ], graph.vertex[firstVertex])))
     sumWeight = 0
     for edge in edges:
         sumWeight += edge.weight
@@ -217,7 +214,7 @@ def weightValue(edge1x, edge1y, edge2x, edge2y, edge3x, edge3y):
 def swap3(indexStart, indexEnd, edges):
     interval = indexEnd - indexStart
     # print(interval, indexEnd, indexStart)
-    while interval > 1:
+    while interval > 2:
         edgeStart = edges[indexStart + 1]
         edgeEnd = edges[indexEnd - 1]
         x, y, w = edgeStart.x, edgeStart.y, edgeStart.weight
@@ -226,15 +223,12 @@ def swap3(indexStart, indexEnd, edges):
         indexStart += 1
         indexEnd -= 1
         interval -= 2
-    if interval == 1:
-        edgeMiddle = edges[indexStart]
+    if interval == 2:
+        edgeMiddle = edges[indexStart + 1]
         x, y = edgeMiddle.x, edgeMiddle.y
         edgeMiddle.setEdge(y, x, edgeMiddle.weight)
-                
 
 def threeOpt(edges, graph):
-    for edge in edges:
-        print(edge.x, edge.y)
     for indexi, i in enumerate(edges):
         for indexj, j in enumerate(edges):
             for indexk, k in enumerate(edges):
@@ -249,7 +243,7 @@ def threeOpt(edges, graph):
                                 distanceList =[d1, d2, d3, d4]
                                 minDistance = min(distanceList)
                                 indexDistance = distanceList.index(minDistance)
-                                if minDistance < i.weight + j.weight + k.weight:
+                                if minDistance < (i.weight + j.weight + k.weight):
                                     if indexDistance == 0:
                                         ix, iy = i.x, i.y
                                         jx, jy = j.x, j.y
@@ -259,7 +253,6 @@ def threeOpt(edges, graph):
                                         k.setEdge(jy, ky, weightEdge(graph.vertex[jy], graph.vertex[ky]))
                                         swap3(indexi, indexj, edges)
                                         swap3(indexj, indexk, edges)
-                                        print("primeiro caso")
                                     elif indexDistance == 1:
                                         ix, iy = i.x, i.y
                                         jx, jy = j.x, j.y
@@ -268,7 +261,6 @@ def threeOpt(edges, graph):
                                         j.setEdge(jy, iy, weightEdge(graph.vertex[jy], graph.vertex[iy]))
                                         k.setEdge(jx, ky, weightEdge(graph.vertex[jx], graph.vertex[ky]))
                                         swap3(indexj, indexk, edges)
-                                        print("segundo caso")
                                     elif indexDistance == 2:
                                         ix, iy = i.x, i.y
                                         jx, jy = j.x, j.y
@@ -277,7 +269,6 @@ def threeOpt(edges, graph):
                                         j.setEdge(kx, jx, weightEdge(graph.vertex[kx], graph.vertex[jx]))
                                         k.setEdge(iy, ky, weightEdge(graph.vertex[iy], graph.vertex[ky]))
                                         swap3(indexi, indexj, edges)
-                                        print("terceiro caso")
                                     else:
                                         ix, iy = i.x, i.y
                                         jx, jy = j.x, j.y
@@ -285,21 +276,17 @@ def threeOpt(edges, graph):
                                         i.setEdge(ix, jy, weightEdge(graph.vertex[ix], graph.vertex[jy]))
                                         j.setEdge(kx, iy, weightEdge(graph.vertex[kx], graph.vertex[iy]))
                                         k.setEdge(jx, ky, weightEdge(graph.vertex[jx], graph.vertex[ky]))
-                                        print("quarto caso")
     sumWeight = 0
     for edge in edges:
         sumWeight += edge.weight
 
-    print("oi")
-    for edge in edges:
-        print(edge.x, edge.y)
     return sumWeight
 
 
 if __name__ == '__main__':
     graph = makeMatrix()
     result, edges = nearestNeighbor(graph)
-    # result2 = twoOpt(edges, graph)
+    result2 = twoOpt(edges, graph)
     result3 = threeOpt(edges, graph)
 
-    print(result, result3)
+    print(result, result2, result3)
