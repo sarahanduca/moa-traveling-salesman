@@ -24,9 +24,6 @@ class Edges:
         self.y = y
         self.weight = weight
 
-    def getEdge(self):
-        return self.x, self.y, self.weight
-
 
 def weightEdge(v1, v2):
     return math.sqrt(((v1[1]-v2[1])**2) + ((v1[2]-v2[2])**2))
@@ -78,9 +75,9 @@ def nearestNeighbor(graph):
         min = math.inf
         for j in range(graph.size):
             if not listVisit[j]:
-                if weightEdge(graph.vertex[randomVertex], graph.vertex[j]) < min:
-                    min = weightEdge(
-                        graph.vertex[randomVertex], graph.vertex[j])
+                currWeight = weightEdge(graph.vertex[randomVertex], graph.vertex[j])
+                if currWeight < min:
+                    min = currWeight
                     lastVertex = j
         listVisit[lastVertex] = True
         edges.append(Edges(randomVertex, lastVertex , min))
@@ -93,39 +90,7 @@ def nearestNeighbor(graph):
     for edge in edges:
         sumWeight += edge.weight
 
-    # betterWeight = [item[1] for item in edges]
     return sumWeight, edges
-
-
-    # randomVertex = random.randint(0, graph.size)
-    # firstVertex = randomVertex
-    # graph.setVisit(randomVertex)
-    # # listVisit = []
-    # # listVisit.append(randomVertex)
-    # edges = []
-    # lastVertex = 0
-    # cont = 0
-    # while cont < graph.size:
-    #     min = math.inf
-    #     # print(graph.isVisit(cont))
-    #     for j in range(graph.size):
-    #         # print(weightEdge(graph.vertex[randomVertex], graph.vertex[j]), graph.isVisit(graph.vertex[j]))
-    #         if not graph.isVisit(j):
-    #             if weightEdge(graph.vertex[randomVertex], graph.vertex[j]) < min:
-    #                 min = weightEdge(
-    #                     graph.vertex[randomVertex], graph.vertex[j])
-    #                 lastVertex = j
-            
-    #     graph.setVisit(j)
-    #     # listVisit.append(i)
-    #     edges.append(Edges(randomVertex, lastVertex, min))
-    #     randomVertex = lastVertex
-    #     cont += 1
-        
-    # edges.append(Edges(lastVertex, firstVertex, weightEdge(
-    # # betterWeight = [item[1] for item in edges]
-    # return sumWeight, edges
-
 
 def farestNeighbor(graph):
     randomVertex = random.randint(0, graph.size)
