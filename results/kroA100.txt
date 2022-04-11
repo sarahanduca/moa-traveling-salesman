@@ -1,0 +1,7 @@
+Teste: kroA100.txt
+Nearest Neihgbor: 27355.44996946554
+Opt 2 para Nearest Neihgbor: 23669.573295538332
+Opt 3 para Nearest Neihgbor: 23147.06752936829
+Nearest insertion: 168397.53124951012
+Opt 2 para Nearest insertion: 34507.94780712888
+Opt 3 para Nearest insertion: 22415.474533131677
