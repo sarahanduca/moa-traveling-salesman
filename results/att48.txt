@@ -1,7 +1,0 @@
-Teste: att48.txt
-Nearest Neihgbor: 41532.697500660295
-Opt 2 para Nearest Neihgbor: 33123.23610591713
-Opt 3 para Nearest Neihgbor: 34476.95244424851
-Nearest insertion: 170570.37889122183
-Opt 2 para Nearest insertion: 44032.36842651117
-Opt 3 para Nearest insertion: 31277.244410491345

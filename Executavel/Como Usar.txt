@@ -1,0 +1,31 @@
+1. Entrar na pasta Dist/travelingSalesman
+2. Clicar no executável travelingSalesman
+3. Digitar Input para coolocar as entradas no mesmo formato que todos os tsp.
+Exemplo:
+NAME : ...10
+COMMENT : 10 vertex
+TYPE : TSP
+DIMENSION : 10
+EDGE_WEIGHT_TYPE : EUC_2D
+NODE_COORD_SECTION
+1 37 52
+2 49 49
+3 52 64
+4 20 26
+5 40 30
+6 21 47
+7 17 63
+8 31 62
+9 52 33
+10 51 21
+EOF
+
+4. Ele retornará algo parecido com isso:
+Nearest Neighbor  212.4719476747095
+2-Opt  180.805955921626
+3-Opt  167.15476372341303
+Nearest Insertion  279.35019232953437
+2-Opt  171.63922230357022
+3-Opt  171.63922230357022
+
+5. Para sair basta digitar "Exit", caso ainda queira testar mais digite qualquer outra coisa.

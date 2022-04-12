@@ -1,7 +1,0 @@
-Teste: tsp225.txt
-Nearest Neihgbor: 5120.352071242886
-Opt 2 para Nearest Neihgbor: 4135.1425745128345
-Opt 3 para Nearest Neihgbor: 4238.524624272304
-Nearest insertion: 30606.434475720023
-Opt 2 para Nearest insertion: 5603.5730820538165
-Opt 3 para Nearest insertion: 4278.97221893999

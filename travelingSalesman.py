@@ -2,12 +2,17 @@ import math
 import random
 import copy
 import time
+import sys
 
-TEST_CASES = [
-    './att48.txt',
-    './kroA100.txt',
-    './tsp225.txt',
-    './pla33810.txt'
+TESTS = [
+    './pr1002.tsp',
+    './fnl4461.tsp',
+    './brd14051.tsp',
+    './d15112.tsp',
+    './d18512.tsp',
+    './pla7397.tsp',
+    './pla33810.tsp',
+    './pla85900.tsp'
 ]
 
 
@@ -54,38 +59,74 @@ def readInput():
     return graph
 
 
-def makeMatrix(test):
-    if test == './att48.txt':
+def makeGraph(test):
+    if test == './pr1002.tsp':
         contLines = 0
         file = open(test, 'r')
-        graph = Graph(48)
+        graph = Graph(1002)
         for line in file:
             graph.setVertex(contLines + 1, float(line.split()
                                                  [1]), float(line.split()[-1]))
             contLines += 1
         return graph
-    elif test == './kroA100.txt':
+    elif test == './fnl4461.tsp':
         contLines = 0
         file = open(test, 'r')
-        graph = Graph(100)
+        graph = Graph(4461)
         for line in file:
             graph.setVertex(contLines + 1, float(line.split()
                                                  [1]), float(line.split()[-1]))
             contLines += 1
         return graph
-    elif test == './tsp225.txt':
+    elif test == './brd14051.tsp':
         contLines = 0
         file = open(test, 'r')
-        graph = Graph(225)
+        graph = Graph(14051)
         for line in file:
             graph.setVertex(contLines + 1, float(line.split()
                                                  [1]), float(line.split()[-1]))
             contLines += 1
         return graph
-    elif test == './pla33810.txt':
+    elif test == './d15112.tsp':
+        contLines = 0
+        file = open(test, 'r')
+        graph = Graph(15112)
+        for line in file:
+            graph.setVertex(contLines + 1, float(line.split()
+                                                 [1]), float(line.split()[-1]))
+            contLines += 1
+        return graph
+    elif test == './d18512.tsp':
+        contLines = 0
+        file = open(test, 'r')
+        graph = Graph(18512)
+        for line in file:
+            graph.setVertex(contLines + 1, float(line.split()
+                                                 [1]), float(line.split()[-1]))
+            contLines += 1
+        return graph
+    elif test == './pla7397.tsp':
+        contLines = 0
+        file = open(test, 'r')
+        graph = Graph(7397)
+        for line in file:
+            graph.setVertex(contLines + 1, float(line.split()
+                                                 [1]), float(line.split()[-1]))
+            contLines += 1
+        return graph
+    elif test == './pla33810.tsp':
         contLines = 0
         file = open(test, 'r')
         graph = Graph(33810)
+        for line in file:
+            graph.setVertex(contLines + 1, float(line.split()
+                                                 [1]), float(line.split()[-1]))
+            contLines += 1
+        return graph
+    elif test == './pla85900.tsp':
+        contLines = 0
+        file = open(test, 'r')
+        graph = Graph(85900)
         for line in file:
             graph.setVertex(contLines + 1, float(line.split()
                                                  [1]), float(line.split()[-1]))
@@ -279,7 +320,6 @@ def weightValue(edge1x, edge1y, edge2x, edge2y, edge3x, edge3y):
 
 def swap3(indexStart, indexEnd, edges):
     interval = indexEnd - indexStart
-    # print(interval, indexEnd, indexStart)
     while interval > 2:
         edgeStart = edges[indexStart + 1]
         edgeEnd = edges[indexEnd - 1]
@@ -381,43 +421,68 @@ def writeResults(nearestNeihgborWeihgt, nearestInsertionWeight, opt2, opt3, path
 
 
 if __name__ == '__main__':
-    # graph = readInput()
-    # result, edges = nearestInsertion(graph)
-    # result, edges = nearestNeighbor(graph)
-    # result2 = twoOpt(edges, graph)
-    # result3 = threeOpt(edges, graph)
-    # print(result, result2, result3)
+    print("Input or Test")
+    answer = input()
+    if answer == 'Test':
+        for test in TESTS:
+            resultNeighbor = 0
+            resultInsertion = 0
+            timeStart = time.time()
+            opt2Cases = [0, 0]
+            opt3Cases = [0, 0]
+            graph = makeGraph(test)
+            newpath = test.split("/")
 
-    for test in TEST_CASES:
-        timeStart = time.time()
-        opt2Cases = []
-        opt3Cases = []
-        graph = makeMatrix(test)
-        newpath = test.split("/")
+            resultNeighbor, edges = nearestNeighbor(graph)
+            edgesCopy = copy.deepcopy(edges)
+            writeResults(resultNeighbor, resultInsertion,
+                         opt2Cases, opt3Cases, newpath[1])
+            print("Nearest Neihgbor ready for 2-Opt")
 
-        resultNeighbor, edges = nearestNeighbor(graph)
-        edgesCopy = copy.deepcopy(edges)
-        print("Nearest Neihgbor pronto para 2opt")
+            result2 = twoOpt(edges, graph)
+            opt2Cases[0] = result2
+            writeResults(resultNeighbor, resultInsertion,
+                         opt2Cases, opt3Cases, newpath[1])
+            print("2-Opt Nearest Neihgbor ready for 3-Opt")
 
-        result2 = twoOpt(edges, graph)
-        opt2Cases.append(result2)
-        print("opt2 Nearest Neihgbor pronto para 3opt")
+            result3 = threeOpt(edgesCopy, graph)
+            opt3Cases[0] = result3
+            writeResults(resultNeighbor, resultInsertion,
+                         opt2Cases, opt3Cases, newpath[1])
 
-        result3 = threeOpt(edgesCopy, graph)
-        opt3Cases.append(result3)
+            resultInsertion, edges = nearestInsertion(graph)
+            edgesCopy = copy.deepcopy(edges)
+            writeResults(resultNeighbor, resultInsertion,
+                         opt2Cases, opt3Cases, newpath[1])
+            print("Nearest Insertion ready for 2-Opt")
 
-        resultInsertion, edges = nearestInsertion(graph)
-        edgesCopy = copy.deepcopy(edges)
-        print("Nearest Neihgbor pronto para 2opt")
+            result2 = twoOpt(edges, graph)
+            opt2Cases[1] = result2
+            writeResults(resultNeighbor, resultInsertion,
+                         opt2Cases, opt3Cases, newpath[1])
+            print("2-Opt Nearest Insertion ready for 3-Opt")
 
-        result2 = twoOpt(edges, graph)
-        opt2Cases.append(result2)
-        print("opt2 Nearest Neihgbor pronto para 3opt")
+            result3 = threeOpt(edgesCopy, graph)
+            opt3Cases[1] = result3
+            timeEnd = time.time()
+            print(timeEnd - timeStart)
 
-        result3 = threeOpt(edgesCopy, graph)
-        opt3Cases.append(result3)
-        timeEnd = time.time()
-        print(timeEnd - timeStart)
-
-        writeResults(resultNeighbor, resultInsertion,
-                     opt2Cases, opt3Cases, newpath[1])
+            writeResults(resultNeighbor, resultInsertion,
+                         opt2Cases, opt3Cases, newpath[1])
+    elif answer == 'Input':
+        exit = 'continue'
+        while exit != "Exit":
+            graph = readInput()
+            resultNN, edges = nearestNeighbor(graph)
+            result2 = twoOpt(edges, graph)
+            result3 = threeOpt(edges, graph)
+            print("Nearest Neighbor ", resultNN)
+            print("2-Opt ", result2)
+            print("3-Opt ", result3)
+            resultNI, edges = nearestInsertion(graph)
+            result2 = twoOpt(edges, graph)
+            result3 = threeOpt(edges, graph)
+            print("Nearest Insertion ", resultNI)
+            print("2-Opt ", result2)
+            print("3-Opt ", result3)
+            exit = input()
