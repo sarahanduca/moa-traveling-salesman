@@ -264,8 +264,6 @@ def compareWeight(graph, edge, randomEdge):
 
 
 def twoOpt(edges, graph):
-    # for edge in edges:
-    # print(edge.x, edge.y)
     for index, edge in enumerate(edges):
         randomList = random.sample(
             range(index, graph.size), graph.size - index)
@@ -280,9 +278,6 @@ def twoOpt(edges, graph):
     for edge in edges:
         sumWeight += edge.weight
 
-    # print('oi')
-    # for edge in edges:
-        # print(edge.x, edge.y)
     return sumWeight
 
 
