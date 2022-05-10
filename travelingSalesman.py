@@ -416,68 +416,72 @@ def writeResults(nearestNeihgborWeihgt, nearestInsertionWeight, opt2, opt3, path
 
 
 if __name__ == '__main__':
-    print("Input or Test")
-    answer = input()
-    if answer == 'Test':
-        for test in TESTS:
-            resultNeighbor = 0
-            resultInsertion = 0
-            timeStart = time.time()
-            opt2Cases = [0, 0]
-            opt3Cases = [0, 0]
-            graph = makeGraph(test)
-            newpath = test.split("/")
+    # print("Input or Test")
+    # answer = input()
+    # if answer == 'Test':
+    #     for test in TESTS:
+    #         resultNeighbor = 0
+    #         resultInsertion = 0
+    #         timeStart = time.time()
+    #         opt2Cases = [0, 0]
+    #         opt3Cases = [0, 0]
+    #         graph = makeGraph(test)
+    #         newpath = test.split("/")
 
-            resultNeighbor, edges = nearestNeighbor(graph)
-            edgesCopy = copy.deepcopy(edges)
-            writeResults(resultNeighbor, resultInsertion,
-                         opt2Cases, opt3Cases, newpath[1])
-            print("Nearest Neihgbor ready for 2-Opt")
+    #         resultNeighbor, edges = nearestNeighbor(graph)
+    #         edgesCopy = copy.deepcopy(edges)
+    #         writeResults(resultNeighbor, resultInsertion,
+    #                      opt2Cases, opt3Cases, newpath[1])
+    #         print("Nearest Neihgbor ready for 2-Opt")
 
-            result2 = twoOpt(edges, graph)
-            opt2Cases[0] = result2
-            writeResults(resultNeighbor, resultInsertion,
-                         opt2Cases, opt3Cases, newpath[1])
-            print("2-Opt Nearest Neihgbor ready for 3-Opt")
+    #         result2 = twoOpt(edges, graph)
+    #         opt2Cases[0] = result2
+    #         writeResults(resultNeighbor, resultInsertion,
+    #                      opt2Cases, opt3Cases, newpath[1])
+    #         print("2-Opt Nearest Neihgbor ready for 3-Opt")
 
-            result3 = threeOpt(edgesCopy, graph)
-            opt3Cases[0] = result3
-            writeResults(resultNeighbor, resultInsertion,
-                         opt2Cases, opt3Cases, newpath[1])
+    #         result3 = threeOpt(edgesCopy, graph)
+    #         opt3Cases[0] = result3
+    #         writeResults(resultNeighbor, resultInsertion,
+    #                      opt2Cases, opt3Cases, newpath[1])
 
-            resultInsertion, edges = nearestInsertion(graph)
-            edgesCopy = copy.deepcopy(edges)
-            writeResults(resultNeighbor, resultInsertion,
-                         opt2Cases, opt3Cases, newpath[1])
-            print("Nearest Insertion ready for 2-Opt")
+    #         resultInsertion, edges = nearestInsertion(graph)
+    #         edgesCopy = copy.deepcopy(edges)
+    #         writeResults(resultNeighbor, resultInsertion,
+    #                      opt2Cases, opt3Cases, newpath[1])
+    #         print("Nearest Insertion ready for 2-Opt")
 
-            result2 = twoOpt(edges, graph)
-            opt2Cases[1] = result2
-            writeResults(resultNeighbor, resultInsertion,
-                         opt2Cases, opt3Cases, newpath[1])
-            print("2-Opt Nearest Insertion ready for 3-Opt")
+    #         result2 = twoOpt(edges, graph)
+    #         opt2Cases[1] = result2
+    #         writeResults(resultNeighbor, resultInsertion,
+    #                      opt2Cases, opt3Cases, newpath[1])
+    #         print("2-Opt Nearest Insertion ready for 3-Opt")
 
-            result3 = threeOpt(edgesCopy, graph)
-            opt3Cases[1] = result3
-            timeEnd = time.time()
-            print(timeEnd - timeStart)
+    #         result3 = threeOpt(edgesCopy, graph)
+    #         opt3Cases[1] = result3
+    #         timeEnd = time.time()
+    #         print(timeEnd - timeStart)
 
-            writeResults(resultNeighbor, resultInsertion,
-                         opt2Cases, opt3Cases, newpath[1])
-    elif answer == 'Input':
-        exit = 'continue'
-        while exit != "Exit":
-            graph = readInput()
-            resultNN, edges = nearestNeighbor(graph)
-            result2 = twoOpt(edges, graph)
-            result3 = threeOpt(edges, graph)
-            print("Nearest Neighbor ", resultNN)
-            print("2-Opt ", result2)
-            print("3-Opt ", result3)
-            resultNI, edges = nearestInsertion(graph)
-            result2 = twoOpt(edges, graph)
-            result3 = threeOpt(edges, graph)
-            print("Nearest Insertion ", resultNI)
-            print("2-Opt ", result2)
-            print("3-Opt ", result3)
-            exit = input()
+    #         writeResults(resultNeighbor, resultInsertion,
+    #                      opt2Cases, opt3Cases, newpath[1])
+    # elif answer == 'Input':
+    #     exit = 'continue'
+    #     while exit != "Exit":
+    #         graph = readInput()
+    #         resultNN, edges = nearestNeighbor(graph)
+    #         result2 = twoOpt(edges, graph)
+    #         result3 = threeOpt(edges, graph)
+    #         print("Nearest Neighbor ", resultNN)
+    #         print("2-Opt ", result2)
+    #         print("3-Opt ", result3)
+    #         resultNI, edges = nearestInsertion(graph)
+    #         result2 = twoOpt(edges, graph)
+    #         result3 = threeOpt(edges, graph)
+    #         print("Nearest Insertion ", resultNI)
+    #         print("2-Opt ", result2)
+    #         print("3-Opt ", result3)
+    #         exit = input()
+
+    graph = readInput()
+    result, edges = nearestNeighbor(graph)
+    print(edges)
