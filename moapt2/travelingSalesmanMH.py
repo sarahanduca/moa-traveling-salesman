@@ -168,11 +168,14 @@ def makePopulation():
     return population, graph
 
 
-def localSearch(son, population):
+def sWeight(list):
     sumWeight = 0
-    for edge in son:
+    for edge in list:
         sumWeight += edge.weight
-    son = makeList(son, sumWeight)
+    return sumWeight
+
+
+def localSearch(son, population):
     for i in range(len(population)):
         if son[0] < population[i][0]:
             population.insert(i, son)
@@ -181,17 +184,44 @@ def localSearch(son, population):
     return population
 
 
+def randomPosition(list):
+    randomList = random.sample(range(2, len(list)-2), 3)
+    return randomList
+
+
+def positionBased(d1, d2, graph):
+    position = randomPosition(d1)
+    son1 = copy.deepcopy(d1[1:])
+    son2 = copy.deepcopy(d2[1:])
+    for i in position:
+        son1[i] = d2[i + 1]
+        son1[d1.index(son1[i]) - 1] = d1[i + 1]
+        son2[i] = d1[i + 1]
+        son2[d2.index(son2[i]) - 1] = d2[i + 1]
+    son1 = mutation(son1)
+    son2 = mutation(son2)
+    son1 = makeWeight(graph, son1)
+    son2 = makeWeight(graph, son2)
+
+    return son1, son2
+
+
 if __name__ == '__main__':
     population = []
     partialResult1 = []
     partialResult2 = []
     population, graph = makePopulation()
+    positionBased(population[0], population[1], graph)
     print(population)
     print("---------------------------------")
     cont = 0
     while cont != 100000:
-        partialResult1, partialResult2 = partiallyMapped(
+        partialResult1, partialResult2 = positionBased(
             population[0], population[1], graph)
-        population = localSearch(partialResult1, population)
+        if sWeight(partialResult1) > sWeight(partialResult2):
+            son = makeList(partialResult1, sWeight(partialResult1))
+        else:
+            son = makeList(partialResult2, sWeight(partialResult2))
+        population = localSearch(son, population)
         cont += 1
     print(population)
